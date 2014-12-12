@@ -13,6 +13,9 @@ Gem::Specification.new do |spec|
   spec.homepage      = "http://rubygems.org/gems/bigstock-client"
   spec.license       = "MIT"
 
+  # This will only work with ruby 2.1 or greater
+  spec.required_ruby_version = '~> 2.1'
+
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
