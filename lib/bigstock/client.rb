@@ -1,14 +1,7 @@
-require "bigstock/client/version"
-require "httparty"
-require "json"
-require "digest/sha1"
-
-require "bigstock/client/thumbnail"
-require "bigstock/client/media"
-require "bigstock/client/format"
-require "bigstock/client/category"
-require "bigstock/client/response"
-require "bigstock/client/lightbox"
+require 'bigstock/client/version'
+require 'httparty'
+require 'json'
+require 'digest/sha1'
 
 module Bigstock
   module Client
@@ -29,32 +22,11 @@ module Bigstock
       def search(query, options = {})
         args = {query: {q: query}}
         args[:query] = args[:query].merge(options) unless options.empty?
-        response = self.class.get('/search', args)
-
-        data = []
-        if response['response_code'] == 200
-          data = response['data']['images'].map { |image_string| Bigstock::Client::Media::from_hash(image_string) }
-        end
-
-        Bigstock::Client::Response.new(
-            response_code: response['response_code'],
-            message: response['message'],
-            data: data
-        )
+        self.class.get('/search', args).parsed_response
       end
 
       def asset(asset_id, asset_type)
-        response = self.class.get("/#{asset_type}/#{asset_id}")
-        data = []
-        if response['response_code'] == 200
-          data = Bigstock::Client::Media.from_hash(response['data'][asset_type])
-        end
-
-        Bigstock::Client::Response.new(
-            response_code: response['response_code'],
-            message: response['message'],
-            data: data
-        )
+        self.class.get("/#{asset_type}/#{asset_id}").parsed_response
       end
 
       def image(image_id)
@@ -66,44 +38,28 @@ module Bigstock
       end
 
       def collections
-        response = self.class.get('/lightbox', query: { auth_key: get_auth })
-        data = []
-        if response['response_code'] == 200
-          data = response['data']['lightboxes'].map {|lightbox| Bigstock::Client::Lightbox.from_hash(lightbox)}
-        end
-
-        Bigstock::Client::Response.new(
-            response_code: response['response_code'],
-            message: response['message'],
-            data: data
-        )
+        self.class.get('/lightbox', query: { auth_key: get_auth }).parsed_response
       end
 
       def collection(collection_id)
-        response = self.class.get("/lightbox/#{collection_id}", query: { auth_key: get_auth(collection_id) })
-        data = []
-        if response['response_code'] == 200
-          response['data']['lightbox']['images'] = response['data']['images'] unless response['data']['images'].empty?
-          data = Bigstock::Client::Lightbox::from_hash(response['data']['lightbox'])
-        end
-
-        Bigstock::Client::Response.new(
-            response_code: response['response_code'],
-            message: response['message'],
-            data: data
-        )
+        self.class.get("/lightbox/#{collection_id}", query: { auth_key: get_auth(collection_id) }).parsed_response
       end
 
       alias_method :lightboxes, :collections
 
       alias_method :lightbox, :collection
 
-      def purchase
-        # -> return purchase object
+      def purchase(asset_id, size_code)
+        self.class.get('/purchase', query: { image_id: asset_id, size_code: size_code, auth_key: get_auth(asset_id) }).parsed_response
       end
 
-      def get_download_url
-
+      def get_download_url(download_id)
+        [
+            self.class.base_uri,
+            '/download?',
+            "download_id=#{download_id}",
+            "&auth_key=#{get_auth(download_id)}"
+        ].join
       end
 
       private
@@ -114,5 +70,7 @@ module Bigstock
       end
 
     end
+
   end
+
 end
