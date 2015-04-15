@@ -11,7 +11,7 @@ module Bigstock
 
       API_VERSION = 2
 
-      def initialize(account_id, secret, use_ssl: false, use_test_api: false)
+      def initialize(account_id, secret, use_ssl = false, use_test_api = false)
         @account_id = account_id
         @secret = secret
         protocol = use_ssl ? 'https' : 'http'
@@ -55,10 +55,10 @@ module Bigstock
 
       def get_download_url(download_id)
         [
-            self.class.base_uri,
-            '/download?',
-            "download_id=#{download_id}",
-            "&auth_key=#{get_auth(download_id)}"
+          self.class.base_uri,
+          '/download?',
+          "download_id=#{download_id}",
+          "&auth_key=#{get_auth(download_id)}"
         ].join
       end
 
