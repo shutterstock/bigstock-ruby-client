@@ -87,4 +87,6 @@ if response['message'] == 'success'
 end
 ```
 
+## License
 
+[MIT](LICENSE) © 2014-2017 moiesk
