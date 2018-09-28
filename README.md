@@ -1,3 +1,7 @@
+# DEPRECATED
+
+This repo is no longer publicly supported.
+
 # bigstock-client-ruby
 
 A Ruby client for Bigstock's API
@@ -86,5 +90,3 @@ if response['message'] == 'success'
   images = response['data']['images']
 end
 ```
-
-
